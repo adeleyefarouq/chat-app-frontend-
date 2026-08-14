@@ -374,6 +374,8 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
     onOpenMyProfile?.();
   };
 
+  const showBottomNav = view !== "chat" && view !== "profile";
+
   const tabs = [
     { id: "chat", icon: <ChatIcon />, label: "Chats" },
     { id: "groups", icon: <GroupIcon />, label: "Groups" },
@@ -406,13 +408,20 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
         ) : view === "list" ? (
           <MobileChatList
             chats={chats}
-            onSelectChat={(chatId) => { setActiveChat(chatId); setView("chat"); }}
+            onSelectChat={(chatId) => {
+              setActiveTab("chat");
+              setActiveChat(chatId);
+              setView("chat");
+            }}
             onFindUser={onFindUser}
             activeTab={activeTab}
           />
         ) : (
           <MobileChatView
-            onBack={() => setView("list")}
+            onBack={() => {
+              setView("list");
+              setActiveTab("chat");
+            }}
             activeChat={activeChatData}
             messages={messages}
             onSendMessage={onSendMessage}
@@ -421,28 +430,30 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
         )}
       </div>
 
-      <div className="flex items-center bg-white border-t border-gray-100 px-2 py-1 safe-area-inset-bottom shrink-0 shadow-lg">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => {
-              if (tab.id === "profile") {
-                handleProfileOpen();
-                return;
-              }
-              setActiveTab(tab.id);
-              if (tab.id === "chat" || tab.id === "groups") setView("list");
-            }}
-            className={`flex-1 flex flex-col items-center gap-0.5 py-2 rounded-xl transition-colors ${
-              activeTab === tab.id ? "text-purple-600" : "text-gray-400"
-            }`}
-          >
-            <span className={`p-1.5 rounded-xl transition-colors ${activeTab === tab.id ? "bg-purple-50" : ""}`}>
-              {tab.icon}
-            </span>
-          </button>
-        ))}
-      </div>
+      {showBottomNav && (
+        <div className="flex items-center bg-white border-t border-gray-100 px-2 py-1 safe-area-inset-bottom shrink-0 shadow-lg">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                if (tab.id === "profile") {
+                  handleProfileOpen();
+                  return;
+                }
+                setActiveTab(tab.id);
+                if (tab.id === "chat" || tab.id === "groups") setView("list");
+              }}
+              className={`flex-1 flex flex-col items-center gap-0.5 py-2 rounded-xl transition-colors ${
+                activeTab === tab.id ? "text-purple-600" : "text-gray-400"
+              }`}
+            >
+              <span className={`p-1.5 rounded-xl transition-colors ${activeTab === tab.id ? "bg-purple-50" : ""}`}>
+                {tab.icon}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
