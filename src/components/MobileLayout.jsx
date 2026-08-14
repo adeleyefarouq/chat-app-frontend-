@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { resolveMediaUrl } from "../services/api";
+import RightPanel from "./RightPanel";
 
 const DEFAULT_PROFILE_AVATAR = "http://localhost:5000/uploads/avatars/default-avatar.svg";
 const DEFAULT_GROUP_AVATAR = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
@@ -367,6 +368,12 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
     }
   }, [activeNav]);
 
+  const handleProfileOpen = () => {
+    setActiveTab("profile");
+    setView("profile");
+    onOpenMyProfile?.();
+  };
+
   const tabs = [
     { id: "chat", icon: <ChatIcon />, label: "Chats" },
     { id: "groups", icon: <GroupIcon />, label: "Groups" },
@@ -380,7 +387,23 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
   return (
     <div className="flex h-full w-full min-w-0 flex-col overflow-hidden bg-white">
       <div className="flex-1 overflow-hidden min-w-0">
-        {view === "list" ? (
+        {view === "profile" ? (
+          <div className="h-full w-full overflow-y-auto bg-white">
+            <RightPanel
+              onClose={() => {
+                setView("list");
+                setActiveTab("chat");
+              }}
+              profile={currentUser}
+              profileMode="me"
+              onUpdateProfile={(updatedUser) => {
+                if (updatedUser) {
+                  onOpenMyProfile?.(updatedUser);
+                }
+              }}
+            />
+          </div>
+        ) : view === "list" ? (
           <MobileChatList
             chats={chats}
             onSelectChat={(chatId) => { setActiveChat(chatId); setView("chat"); }}
@@ -404,7 +427,7 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
             key={tab.id}
             onClick={() => {
               if (tab.id === "profile") {
-                onOpenMyProfile?.();
+                handleProfileOpen();
                 return;
               }
               setActiveTab(tab.id);
