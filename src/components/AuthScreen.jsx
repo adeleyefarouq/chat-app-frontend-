@@ -66,6 +66,7 @@ export default function AuthScreen() {
     password: "",
   });
   const [avatarPreview, setAvatarPreview] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -90,6 +91,8 @@ export default function AuthScreen() {
   const handleAvatarChange = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    setAvatarFile(file);
 
     try {
       const data = await readFileAsDataUri(file);
@@ -155,8 +158,7 @@ export default function AuthScreen() {
         phone,
         email,
         password,
-        avatar: avatarPreview || buildAvatarDataUri(name || username),
-      });
+      }, avatarFile || null);
     } catch (caughtError) {
       setError(getFriendlyAuthError(caughtError));
     } finally {

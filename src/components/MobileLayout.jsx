@@ -279,7 +279,7 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab }) {
   });
 
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex h-full w-full min-w-0 flex-col overflow-hidden bg-white">
       <div className="flex items-center justify-between px-4 pt-5 pb-3 bg-white">
         <div className="flex items-center gap-2">
           <AWLogo />
@@ -353,7 +353,7 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab }) {
   );
 }
 
-export default function MobileLayout({ currentUser, chats, activeChat, setActiveChat, activeNav, messages, onSendMessage, onFindUser }) {
+export default function MobileLayout({ currentUser, chats, activeChat, setActiveChat, activeNav, messages, onSendMessage, onFindUser, onOpenMyProfile }) {
   const [view, setView] = useState("list");
   const [activeTab, setActiveTab] = useState(activeNav === "groups" ? "groups" : "chat");
 
@@ -378,8 +378,8 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
   const activeChatData = chats.find((chat) => chat.id === activeChat) || null;
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="flex-1 overflow-hidden">
+    <div className="flex h-full w-full min-w-0 flex-col overflow-hidden bg-white">
+      <div className="flex-1 overflow-hidden min-w-0">
         {view === "list" ? (
           <MobileChatList
             chats={chats}
@@ -403,6 +403,10 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
           <button
             key={tab.id}
             onClick={() => {
+              if (tab.id === "profile") {
+                onOpenMyProfile?.();
+                return;
+              }
               setActiveTab(tab.id);
               if (tab.id === "chat" || tab.id === "groups") setView("list");
             }}

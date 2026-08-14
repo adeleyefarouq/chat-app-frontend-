@@ -60,10 +60,35 @@ export const api = {
       method: "POST",
       body: JSON.stringify(credentials),
     }),
-    register: (payload) => request("/auth/register", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    }),
+    register: async (payload, avatarFile = null) => {
+      const basePayload = {
+        name: payload?.name,
+        username: payload?.username,
+        phone: payload?.phone,
+        email: payload?.email,
+        password: payload?.password,
+      };
+
+      const data = await request("/auth/register", {
+        method: "POST",
+        body: JSON.stringify(basePayload),
+      });
+
+      if (!avatarFile || !data?.token) {
+        return data;
+      }
+
+      try {
+        const uploaded = await api.users.uploadAvatar(avatarFile);
+        return {
+          ...data,
+          user: uploaded?.user || uploaded || data.user,
+        };
+      } catch (error) {
+        console.warn("Avatar upload after registration failed:", error);
+        return data;
+      }
+    },
     oauth: (provider = "google") => {
       const href = `${API_BASE}/auth/${provider}`;
       window.location.href = href;

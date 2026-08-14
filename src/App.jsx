@@ -529,6 +529,7 @@ function AppContent() {
           messages={messages}
           onSendMessage={handleSendMessage}
           onFindUser={startConversationByUsername}
+          onOpenMyProfile={openMyProfile}
         />
       </div>
     );

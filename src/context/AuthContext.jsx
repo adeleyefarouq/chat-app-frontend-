@@ -51,8 +51,8 @@ export function AuthProvider({ children }) {
       setUser(data.user || data);
       return data;
     },
-    register: async (payload) => {
-      const data = await api.auth.register(payload);
+    register: async (payload, avatarFile = null) => {
+      const data = await api.auth.register(payload, avatarFile);
       if (data.token) {
         sessionStorage.setItem("chat-app-token", data.token);
         setToken(data.token);
