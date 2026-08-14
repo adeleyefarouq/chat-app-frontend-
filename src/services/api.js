@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.VITE_API_URL || "/api";
+// ✅ Hardcode your Render URL as the default fallback
+const rawApiUrl = import.meta.env.VITE_API_URL || "https://chat-app-acpl.onrender.com";
+const API_BASE = rawApiUrl.endsWith("/api") ? rawApiUrl : `${rawApiUrl.replace(/\/$/, "")}/api`;
 
 export function resolveMediaUrl(path) {
   if (!path) return path;
