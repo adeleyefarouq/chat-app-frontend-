@@ -266,7 +266,7 @@ function MobileChatView({ onBack, activeChat, messages, onSendMessage, currentUs
   );
 }
 
-function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab }) {
+function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab, searchResults = [], searchLoading = false }) {
   const [activeFilter, setActiveFilter] = useState("All");
   const [search, setSearch] = useState("");
   const filters = ["All", "Unread", "Groups", "Mentions"];
@@ -278,6 +278,10 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab }) {
     if (activeFilter === "Unread") return chat.unread > 0;
     return true;
   });
+
+  // When user has typed in search and we have search results, display those
+  const displayList = search.trim() ? searchResults : filteredChats;
+  const noResultsMessage = search.trim() ? "No users found" : "No chats found";
 
   return (
     <div className="flex h-full w-full min-w-0 flex-col overflow-hidden bg-white">
@@ -310,51 +314,55 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto px-4 pb-3 scrollbar-hide">
-        {filters.map((f) => (
-          <button
-            key={f}
-            onClick={() => setActiveFilter(f)}
-            className={`filter-chip shrink-0 rounded-full border-0 px-3 py-1.5 text-xs font-semibold outline-none ${
-              activeFilter === f ? "active" : ""
-            }`}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
+      {!search.trim() && (
+        <div className="flex items-center gap-2 overflow-x-auto px-4 pb-3 scrollbar-hide">
+          {filters.map((f) => (
+            <button
+              key={f}
+              onClick={() => setActiveFilter(f)}
+              className={`filter-chip shrink-0 rounded-full border-0 px-3 py-1.5 text-xs font-semibold outline-none ${
+                activeFilter === f ? "active" : ""
+              }`}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
-        {filteredChats.map((chat) => (
+        {searchLoading ? (
+          <div className="px-4 py-8 text-center text-sm text-gray-400">Searching...</div>
+        ) : displayList.map((item) => (
           <div
-            key={chat.id}
-            onClick={() => onSelectChat(chat.id)}
+            key={item.id}
+            onClick={() => onSelectChat(item.id)}
             className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50 active:bg-gray-100"
           >
             <div className="relative shrink-0">
-              <img src={resolveMediaUrl(chat.isGroup ? DEFAULT_GROUP_AVATAR : (chat.avatar || buildAvatar(chat.name)))} alt={chat.name} className="h-12 w-12 rounded-full object-cover" />
-              {chat.isOnline && (
+              <img src={resolveMediaUrl(item.isGroup ? DEFAULT_GROUP_AVATAR : (item.avatar || buildAvatar(item.name || item.username)))} alt={item.name || item.username} className="h-12 w-12 rounded-full object-cover" />
+              {item.isOnline && (
                 <span className="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
               )}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
-                <span className="truncate text-sm font-semibold text-gray-800">{chat.name}</span>
-                <span className="shrink-0 text-[11px] text-gray-400">{chat.time}</span>
+                <span className="truncate text-sm font-semibold text-gray-800">{item.name || item.username}</span>
+                {item.time && <span className="shrink-0 text-[11px] text-gray-400">{item.time}</span>}
               </div>
-              <p className="mt-0.5 truncate text-xs text-gray-500">{chat.lastMessage}</p>
+              {item.lastMessage && <p className="mt-0.5 truncate text-xs text-gray-500">{item.lastMessage}</p>}
             </div>
           </div>
         ))}
-        {filteredChats.length === 0 && (
-          <div className="px-4 py-8 text-center text-sm text-gray-400">No chats found</div>
+        {!searchLoading && displayList.length === 0 && (
+          <div className="px-4 py-8 text-center text-sm text-gray-400">{noResultsMessage}</div>
         )}
       </div>
     </div>
   );
 }
 
-export default function MobileLayout({ currentUser, chats, activeChat, setActiveChat, activeNav, messages, onSendMessage, onFindUser, onOpenMyProfile }) {
+export default function MobileLayout({ currentUser, chats, activeChat, setActiveChat, activeNav, messages, onSendMessage, onFindUser, onOpenMyProfile, searchResults = [], searchLoading = false }) {
   const [view, setView] = useState("list");
   const [activeTab, setActiveTab] = useState(activeNav === "groups" ? "groups" : "chat");
 
@@ -390,7 +398,7 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
     <div className="flex h-full w-full min-w-0 flex-col overflow-hidden bg-white">
       <div className="flex-1 min-h-0 overflow-hidden">
         {view === "profile" ? (
-          <div className="h-full w-full overflow-y-auto bg-white">
+          <div className="h-full w-full overflow-y-auto bg-white [&>div]:w-full! [&>div]:shrink-0">
             <RightPanel
               onClose={() => {
                 setView("list");
@@ -415,6 +423,8 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
             }}
             onFindUser={onFindUser}
             activeTab={activeTab}
+            searchResults={searchResults}
+            searchLoading={searchLoading}
           />
         ) : (
           <MobileChatView

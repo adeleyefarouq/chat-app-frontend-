@@ -553,6 +553,8 @@ function AppContent() {
           onSendMessage={handleSendMessage}
           onFindUser={startConversationByUsername}
           onOpenMyProfile={openMyProfile}
+          searchResults={searchResults}
+          searchLoading={searchLoading}
         />
       </div>
     );
