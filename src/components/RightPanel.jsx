@@ -167,7 +167,7 @@ export default function RightPanel({ onClose, profile, profileMode = "partner", 
   return (
     <div className="flex flex-col w-[280px] xl:w-[300px] bg-white border-l border-gray-100 h-full shrink-0" style={{ overflowY: "auto", scrollbarWidth: "thin", scrollbarColor: "#e2e8f0 transparent" }}>
       <div className="relative flex flex-col items-center pt-10 pb-7 px-4 shrink-0" style={{ background: "linear-gradient(150deg, #c4b5fd 0%, #a78bfa 35%, #8b5cf6 70%, #7c3aed 100%)" }}>
-        <button onClick={onClose} className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-colors">
+        <button onClick={onClose} className="absolute top-1/2 -translate-y-1/2 right-3 w-7 h-7 flex items-center justify-center rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-colors">
           <CloseIcon />
         </button>
         {profileMode !== "me" && (
