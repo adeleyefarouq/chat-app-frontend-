@@ -473,38 +473,61 @@ function AppContent() {
   };
 
   const handleToggleMuteChat = async (chatId) => {
+    const previousChat = conversations.find((c) => c.id === chatId);
+    const previousMuted = previousChat?.muted || false;
+    const nextMuted = !previousMuted;
+    setConversations((previous) => previous.map((chat) => chat.id === chatId ? { ...chat, muted: nextMuted } : chat));
+
     try {
       const response = await api.chats.toggleMute(chatId);
       const muted = Boolean(response?.muted);
       setConversations((previous) => previous.map((chat) => chat.id === chatId ? { ...chat, muted } : chat));
     } catch (error) {
+      setConversations((previous) => previous.map((chat) => chat.id === chatId ? { ...chat, muted: previousMuted } : chat));
       console.error("Failed to toggle mute:", error);
     }
   };
 
   const handleHideChat = async (chatId) => {
+    const previousConversations = conversations;
+    setConversations((previous) => previous.filter((chat) => chat.id !== chatId));
+    if (activeChat === chatId) {
+      setActiveChat(null);
+    }
+
     try {
       const response = await api.chats.hideChat(chatId);
       const hidden = Boolean(response?.hidden);
-      if (hidden) {
-        setConversations((previous) => previous.filter((chat) => chat.id !== chatId));
-        if (activeChat === chatId) {
-          setActiveChat(null);
+      if (!hidden) {
+        setConversations(previousConversations);
+        if (activeChat === null) {
+          setActiveChat(chatId);
         }
       }
     } catch (error) {
+      setConversations(previousConversations);
+      if (activeChat === null) {
+        setActiveChat(chatId);
+      }
       console.error("Failed to hide chat:", error);
     }
   };
 
   const handleToggleBlockUser = async (userId) => {
+    const currentBlocked = Array.isArray(user?.blockedUsers) ? user.blockedUsers : [];
+    const isBlocked = currentBlocked.includes(String(userId));
+    const nextBlocked = isBlocked 
+      ? currentBlocked.filter((id) => id !== String(userId))
+      : [...new Set([...currentBlocked, String(userId)])];
+    updateUser({ blockedUsers: nextBlocked });
+
     try {
       const response = await api.users.toggleBlock(userId);
       const blocked = Boolean(response?.blocked);
-      const currentBlocked = Array.isArray(user?.blockedUsers) ? user.blockedUsers : [];
-      const nextBlocked = blocked ? [...new Set([...currentBlocked, String(userId)])] : currentBlocked.filter((id) => id !== String(userId));
-      updateUser({ blockedUsers: nextBlocked });
+      const updatedBlocked = blocked ? [...new Set([...currentBlocked, String(userId)])] : currentBlocked.filter((id) => id !== String(userId));
+      updateUser({ blockedUsers: updatedBlocked });
     } catch (error) {
+      updateUser({ blockedUsers: currentBlocked });
       console.error("Failed to toggle block:", error);
     }
   };

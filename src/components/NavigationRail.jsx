@@ -74,7 +74,7 @@ export default function NavigationRail({ activeNav, setActiveNav, currentUser, o
   };
 
   return (
-    <div className="hidden lg:flex flex-col items-center w-[68px] bg-white border-r border-gray-100 h-full py-4 flex-shrink-0">
+    <div className="hidden lg:flex flex-col items-center w-[68px] bg-white border-r border-gray-100 h-full py-4 shrink-0">
       {/* Logo */}
       <div className="mb-6">
         <AWLogo />

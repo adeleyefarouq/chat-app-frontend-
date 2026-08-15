@@ -52,7 +52,7 @@ export default function StarredMessagesView({ starredMessages = [], onJumpToChat
   return (
     <div className="flex-1 h-full flex flex-col bg-slate-50/50 overflow-hidden">
       {/* Header */}
-      <div className="h-20 border-b border-gray-100 bg-white px-6 flex items-center justify-between flex-shrink-0">
+      <div className="h-20 border-b border-gray-100 bg-white px-6 flex items-center justify-between shrink-0">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.24em] text-purple-600">Messages</p>
           <h2 className="font-bold text-gray-800 text-sm leading-tight mt-1">Starred Messages ({starredMessages.length})</h2>

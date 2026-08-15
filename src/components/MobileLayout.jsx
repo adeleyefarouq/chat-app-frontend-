@@ -332,7 +332,7 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab }) {
             className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50 active:bg-gray-100"
           >
             <div className="relative shrink-0">
-              <img src={resolveMediaUrl(chat.avatar || buildAvatar(chat.name))} alt={chat.name} className="h-12 w-12 rounded-full object-cover" />
+              <img src={resolveMediaUrl(chat.isGroup ? DEFAULT_GROUP_AVATAR : (chat.avatar || buildAvatar(chat.name)))} alt={chat.name} className="h-12 w-12 rounded-full object-cover" />
               {chat.isOnline && (
                 <span className="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
               )}
