@@ -188,41 +188,41 @@ function MobileChatView({ onBack, activeChat, messages, onSendMessage, currentUs
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
-      <div className="flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-100 shrink-0 shadow-sm">
-        <button onClick={onBack} className="w-8 h-8 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 transition-colors">
+    <div className="flex h-full w-full min-w-0 flex-col overflow-hidden bg-gray-50">
+      <div className="flex items-center gap-3 border-b border-gray-100 bg-white px-3 py-3 shadow-sm shrink-0">
+        <button onClick={onBack} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100">
           <BackIcon />
         </button>
-        <div className="relative">
+        <div className="relative shrink-0">
           <img
             src={resolveMediaUrl(activeChat?.isGroup ? DEFAULT_GROUP_AVATAR : (activeChat?.avatar || buildAvatar(activeChat?.name || "User")))}
             alt={activeChat?.name || "Chat user"}
-            className="w-9 h-9 rounded-full object-cover"
+            className="h-9 w-9 rounded-full object-cover"
           />
-          <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white" />
+          <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-green-500" />
         </div>
-        <div className="flex-1">
-          <p className="font-bold text-gray-800 text-sm leading-tight">{activeChat?.name || "Select a conversation"}</p>
-          <p className="text-xs text-green-500 font-medium">{activeChat?.isOnline ? "Online" : "Offline"}</p>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-bold leading-tight text-gray-800">{activeChat?.name || "Select a conversation"}</p>
+          <p className="text-[11px] font-medium text-green-500">{activeChat?.isOnline ? "Online" : "Offline"}</p>
         </div>
-        <button className="text-gray-400 hover:text-gray-600 transition-colors">
+        <button className="flex h-8 w-8 shrink-0 items-center justify-center text-gray-400 transition-colors hover:text-gray-600">
           <MoreIcon />
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto scrollbar-hide px-3 py-3">
+      <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
         {(messages || []).map((msg) => <MobileMessageBubble key={msg.id} msg={msg} currentUser={currentUser} />)}
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="bg-white border-t border-gray-100 px-3 py-2.5 relative">
+      <div className="relative border-t border-gray-100 bg-white px-2.5 py-2.5">
         <div className="flex items-center gap-2">
-          <button onClick={() => fileInputRef.current?.click()} className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-purple-600 transition-colors">
+          <button onClick={() => fileInputRef.current?.click()} className="flex h-8 w-8 shrink-0 items-center justify-center text-gray-400 transition-colors hover:text-purple-600">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
               <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
           </button>
-          <div className="flex-1 flex items-center gap-1.5 bg-gray-50 rounded-2xl px-3 py-2 border border-gray-100 relative">
+          <div className="relative flex min-w-0 flex-1 items-center gap-1.5 rounded-2xl border border-gray-100 bg-gray-50 px-2.5 py-2">
             <input
               type="text"
               value={inputText}
@@ -234,10 +234,10 @@ function MobileChatView({ onBack, activeChat, messages, onSendMessage, currentUs
                 }
               }}
               placeholder="Type a message..."
-              className="flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder-gray-400"
+              className="min-w-0 flex-1 bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
             />
-            <div className="flex items-center gap-1" ref={emojiRef}>
-              <button onClick={() => setShowEmoji((v) => !v)} className="text-gray-400 hover:text-purple-600 transition-colors w-7 h-7 flex items-center justify-center rounded-lg">
+            <div className="flex shrink-0 items-center gap-1" ref={emojiRef}>
+              <button onClick={() => setShowEmoji((v) => !v)} className="flex h-7 w-7 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-purple-50 hover:text-purple-600">
                 <EmojiIcon />
               </button>
               {showEmoji && (
@@ -249,14 +249,14 @@ function MobileChatView({ onBack, activeChat, messages, onSendMessage, currentUs
                 </div>
               )}
             </div>
-            <button onClick={() => fileInputRef.current?.click()} className="text-gray-400 hover:text-purple-600 transition-colors w-7 h-7 flex items-center justify-center rounded-lg">
+            <button onClick={() => fileInputRef.current?.click()} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-purple-50 hover:text-purple-600">
               <AttachIcon />
             </button>
-            <button className="text-gray-400 hover:text-purple-600 transition-colors w-7 h-7 flex items-center justify-center rounded-lg">
+            <button className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-purple-50 hover:text-purple-600">
               <MicIcon />
             </button>
           </div>
-          <button onClick={sendMessage} className="send-btn w-10 h-10 rounded-2xl flex items-center justify-center shrink-0">
+          <button onClick={sendMessage} className="send-btn flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl">
             <SendIcon />
           </button>
         </div>
@@ -281,19 +281,19 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab }) {
 
   return (
     <div className="flex h-full w-full min-w-0 flex-col overflow-hidden bg-white">
-      <div className="flex items-center justify-between px-4 pt-5 pb-3 bg-white">
+      <div className="flex items-center justify-between bg-white px-4 pb-3 pt-5">
         <div className="flex items-center gap-2">
           <AWLogo />
-          <span className="font-bold text-gray-800 text-lg">Chats</span>
+          <span className="text-lg font-bold text-gray-800">Chats</span>
         </div>
-        <button className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 transition-colors">
+        <button className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 transition-colors hover:bg-gray-100">
           <SearchIcon />
         </button>
       </div>
 
       <div className="px-4 pb-3">
-        <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2.5 border border-gray-100">
-          <span className="text-gray-400 shrink-0"><SearchIcon /></span>
+        <div className="flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5">
+          <span className="shrink-0 text-gray-400"><SearchIcon /></span>
           <input
             type="text"
             value={search}
@@ -305,17 +305,17 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab }) {
               }
             }}
             placeholder="Search or start a new chat"
-            className="flex-1 bg-transparent text-xs text-gray-700 outline-none placeholder-gray-400 min-w-0"
+            className="min-w-0 flex-1 bg-transparent text-xs text-gray-700 outline-none placeholder:text-gray-400"
           />
         </div>
       </div>
 
-      <div className="flex items-center gap-2 px-4 pb-3 overflow-x-auto scrollbar-hide">
+      <div className="flex items-center gap-2 overflow-x-auto px-4 pb-3 scrollbar-hide">
         {filters.map((f) => (
           <button
             key={f}
             onClick={() => setActiveFilter(f)}
-            className={`filter-chip text-xs font-semibold px-3 py-1.5 rounded-full border-0 outline-none shrink-0 ${
+            className={`filter-chip shrink-0 rounded-full border-0 px-3 py-1.5 text-xs font-semibold outline-none ${
               activeFilter === f ? "active" : ""
             }`}
           >
@@ -324,25 +324,25 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab }) {
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto scrollbar-hide">
+      <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
         {filteredChats.map((chat) => (
           <div
             key={chat.id}
             onClick={() => onSelectChat(chat.id)}
-            className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors"
+            className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50 active:bg-gray-100"
           >
             <div className="relative shrink-0">
-              <img src={resolveMediaUrl(chat.avatar || buildAvatar(chat.name))} alt={chat.name} className="w-12 h-12 rounded-full object-cover" />
+              <img src={resolveMediaUrl(chat.avatar || buildAvatar(chat.name))} alt={chat.name} className="h-12 w-12 rounded-full object-cover" />
               {chat.isOnline && (
-                <span className="absolute bottom-0.5 right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white" />
+                <span className="absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full border-2 border-white bg-green-500" />
               )}
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-gray-800 text-sm">{chat.name}</span>
-                <span className="text-[11px] text-gray-400">{chat.time}</span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-2">
+                <span className="truncate text-sm font-semibold text-gray-800">{chat.name}</span>
+                <span className="shrink-0 text-[11px] text-gray-400">{chat.time}</span>
               </div>
-              <p className="text-xs text-gray-500 truncate mt-0.5">{chat.lastMessage}</p>
+              <p className="mt-0.5 truncate text-xs text-gray-500">{chat.lastMessage}</p>
             </div>
           </div>
         ))}
@@ -388,7 +388,7 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
 
   return (
     <div className="flex h-full w-full min-w-0 flex-col overflow-hidden bg-white">
-      <div className="flex-1 overflow-hidden min-w-0">
+      <div className="flex-1 min-h-0 overflow-hidden">
         {view === "profile" ? (
           <div className="h-full w-full overflow-y-auto bg-white">
             <RightPanel
@@ -431,7 +431,7 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
       </div>
 
       {showBottomNav && (
-        <div className="flex items-center bg-white border-t border-gray-100 px-2 py-1 safe-area-inset-bottom shrink-0 shadow-lg">
+        <div className="flex shrink-0 items-center border-t border-gray-100 bg-white px-2 py-1 shadow-lg">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -443,11 +443,11 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
                 setActiveTab(tab.id);
                 if (tab.id === "chat" || tab.id === "groups") setView("list");
               }}
-              className={`flex-1 flex flex-col items-center gap-0.5 py-2 rounded-xl transition-colors ${
+              className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl py-2 transition-colors ${
                 activeTab === tab.id ? "text-purple-600" : "text-gray-400"
               }`}
             >
-              <span className={`p-1.5 rounded-xl transition-colors ${activeTab === tab.id ? "bg-purple-50" : ""}`}>
+              <span className={`rounded-xl p-1.5 transition-colors ${activeTab === tab.id ? "bg-purple-50" : ""}`}>
                 {tab.icon}
               </span>
             </button>
