@@ -262,7 +262,7 @@ export default function AuthScreen() {
           onClick={() => oauth("google")}
           className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700"
         >
-          Continue with Google OAuth
+          Sign in with Google
         </button>
 
         <div className="mt-4 flex items-center justify-between text-xs text-slate-500">

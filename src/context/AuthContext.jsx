@@ -4,7 +4,16 @@ import { api } from "../services/api";
 const AuthContext = createContext(null);
 
 function readToken() {
-  return typeof window !== "undefined" ? sessionStorage.getItem("chat-app-token") : null;
+  if (typeof window === "undefined") return null;
+
+  const callbackToken = new URLSearchParams(window.location.search).get("token");
+  if (callbackToken) {
+    sessionStorage.setItem("chat-app-token", callbackToken);
+    window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
+    return callbackToken;
+  }
+
+  return sessionStorage.getItem("chat-app-token");
 }
 
 export function AuthProvider({ children }) {
