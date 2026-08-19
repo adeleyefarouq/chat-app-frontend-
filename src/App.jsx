@@ -60,22 +60,23 @@ function normalizeChat(item) {
 
 function normalizeMessages(items = [], currentUser) {
   return items.map((item) => {
-    const sender = typeof item.sender === "string" ? { username: item.sender, name: item.sender } : item.sender || item.user || {};
+    const message = item?.message && typeof item.message === "object" ? item.message : item;
+    const sender = typeof message.sender === "string" ? { username: message.sender, name: message.sender } : message.sender || message.user || {};
     const isSent = currentUser && (sender.id === currentUser.id || sender.username === currentUser.username);
-    const senderName = sender.name || sender.username || item.senderName || "Unknown";
-    const starredBy = Array.isArray(item.starredBy) ? item.starredBy : [];
+    const senderName = sender.name || sender.username || message.senderName || "Unknown";
+    const starredBy = Array.isArray(message.starredBy) ? message.starredBy : [];
     const isStarred = starredBy.some((id) => id === currentUser?.id || id === currentUser?._id);
-    const contentType = item.contentType || (item.imageUrl ? "image" : "text");
+    const contentType = message.contentType || (message.imageUrl ? "image" : "text");
     return {
-      id: item.id || item._id || `${item.createdAt || Date.now()}-${senderName}`,
+      id: message.id || message._id || `${message.createdAt || Date.now()}-${senderName}`,
       type: isSent ? "sent" : "received",
       sender: senderName,
-      senderAvatar: item.senderAvatar || sender.avatar || buildAvatar(senderName),
-      time: item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Now",
-      content: item.content || item.text || item.message || "",
+      senderAvatar: message.senderAvatar || sender.avatar || buildAvatar(senderName),
+      time: message.createdAt ? new Date(message.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Now",
+      content: message.content || message.text || message.message || "",
       contentType,
-      imageUrl: contentType === "image" ? (item.content || item.imageUrl) : (item.imageUrl || null),
-      reactions: item.reactions || [],
+      imageUrl: contentType === "image" ? (message.imageUrl || message.content || null) : (message.imageUrl || null),
+      reactions: message.reactions || [],
       isStarred,
     };
   });
@@ -419,6 +420,7 @@ function AppContent() {
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           content: content.trim(),
           contentType,
+          imageUrl: contentType === "image" ? content.trim() : null,
           reactions: [],
         },
       ]);
