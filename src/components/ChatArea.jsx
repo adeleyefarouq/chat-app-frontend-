@@ -441,7 +441,7 @@ export default function ChatArea({
       console.log('[ChatArea] image uploaded:', imageUrl);
       
       // Send the message with the image URL
-      await onSendMessage?.({ content: imageUrl, contentType: 'image' });
+      await onSendMessage?.(imageUrl, { contentType: 'image' });
     } catch (error) {
       console.error('[ChatArea] image upload failed:', error);
     }
