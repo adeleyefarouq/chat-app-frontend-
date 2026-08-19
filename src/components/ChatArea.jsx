@@ -138,7 +138,7 @@ function MeetingInviteCard({ data }) {
 }
 
 /* ── Message Bubble ── */
-function MessageBubble({ msg, showSenderName = false, onStarMessage }) {
+function MessageBubble({ msg, showSenderName = false, onStarMessage, onOpenImage }) {
   const isSent = msg.type === "sent";
   const isStarred = msg.isStarred || false;
 
@@ -192,8 +192,9 @@ function MessageBubble({ msg, showSenderName = false, onStarMessage }) {
               <img
                 src={resolveMediaUrl(msg.imageUrl)}
                 alt="attachment"
-                className="w-full object-cover"
+                className="w-full cursor-pointer object-cover"
                 style={{ maxHeight: "180px" }}
+                onClick={() => onOpenImage?.(msg.imageUrl)}
               />
             </div>
           ) : msg.contentType === "image" ? (
@@ -201,8 +202,9 @@ function MessageBubble({ msg, showSenderName = false, onStarMessage }) {
               <img
                 src={resolveMediaUrl(msg.imageUrl)}
                 alt="attachment"
-                className="object-cover rounded-2xl"
+                className="cursor-pointer rounded-2xl object-cover"
                 style={{ maxWidth: "260px", maxHeight: "200px" }}
+                onClick={() => onOpenImage?.(msg.imageUrl)}
               />
             </div>
           ) : null}
@@ -332,6 +334,7 @@ export default function ChatArea({
   const [showMenu, setShowMenu] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [voiceError, setVoiceError] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
   const messagesEndRef = useRef(null);
   const shouldShowTyping = Boolean(activeChat?.isOnline && isTyping);
   const fileInputRef = useRef(null);
@@ -557,6 +560,7 @@ export default function ChatArea({
                 msg={msg} 
                 showSenderName={Boolean(activeChat?.isGroup)}
                 onStarMessage={onStarMessage}
+                onOpenImage={setPreviewImage}
               />
             ))}
             {shouldShowTyping && <TypingIndicator name={activeChat?.name || "User"} />}
@@ -651,6 +655,28 @@ export default function ChatArea({
           onChange={handleFileSelect}
         />
       </div>
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6"
+          onClick={() => setPreviewImage(null)}
+        >
+          <button
+            type="button"
+            aria-label="Close image preview"
+            className="absolute right-5 top-5 rounded-full bg-white px-3 py-1 text-2xl leading-none text-gray-700 shadow-lg"
+            onClick={() => setPreviewImage(null)}
+          >
+            &times;
+          </button>
+          <img
+            src={resolveMediaUrl(previewImage)}
+            alt="Full-size attachment"
+            className="max-h-full max-w-full object-contain"
+            onClick={(event) => event.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

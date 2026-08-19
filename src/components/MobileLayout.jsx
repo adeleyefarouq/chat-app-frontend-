@@ -86,7 +86,7 @@ const AWLogo = () => (
 
 const EMOJIS = ["😀","😂","😍","🥰","😎","🤩","😊","🥳","👍","👏","🙌","🤝","❤️","🔥","⭐","✨","🎉","🎊","🎈","🎁","💯","🚀","💪","🙏","😅","🤔","😮","😱","🤣","😭","🥺","😤"];
 
-function MobileMessageBubble({ msg, currentUser }) {
+function MobileMessageBubble({ msg, currentUser, onOpenImage }) {
   const isSent = msg.type === "sent";
   const senderAvatar = msg.senderAvatar || buildAvatar(msg.sender || "User");
 
@@ -110,7 +110,12 @@ function MobileMessageBubble({ msg, currentUser }) {
               {msg.content}
             </div>
           ) : msg.contentType === "image" ? (
-            <img src={resolveMediaUrl(msg.imageUrl)} alt="attachment" className="max-w-[200px] max-h-40 object-cover rounded-2xl" />
+            <img
+              src={resolveMediaUrl(msg.imageUrl)}
+              alt="attachment"
+              className="max-h-40 max-w-[200px] cursor-pointer rounded-2xl object-cover"
+              onClick={() => onOpenImage?.(msg.imageUrl)}
+            />
           ) : null}
         </div>
         {isSent && <span className="text-[9px] text-gray-400 mt-0.5 px-1">{msg.time}</span>}
@@ -143,6 +148,7 @@ function MobileEmojiPicker({ onSelect }) {
 function MobileChatView({ onBack, activeChat, messages, onSendMessage, currentUser }) {
   const [inputText, setInputText] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const emojiRef = useRef(null);
@@ -211,7 +217,7 @@ function MobileChatView({ onBack, activeChat, messages, onSendMessage, currentUs
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
-        {(messages || []).map((msg) => <MobileMessageBubble key={msg.id} msg={msg} currentUser={currentUser} />)}
+        {(messages || []).map((msg) => <MobileMessageBubble key={msg.id} msg={msg} currentUser={currentUser} onOpenImage={setPreviewImage} />)}
         <div ref={messagesEndRef} />
       </div>
 
@@ -262,6 +268,28 @@ function MobileChatView({ onBack, activeChat, messages, onSendMessage, currentUs
         </div>
         <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
       </div>
+
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-6"
+          onClick={() => setPreviewImage(null)}
+        >
+          <button
+            type="button"
+            aria-label="Close image preview"
+            className="absolute right-5 top-5 rounded-full bg-white px-3 py-1 text-2xl leading-none text-gray-700 shadow-lg"
+            onClick={() => setPreviewImage(null)}
+          >
+            &times;
+          </button>
+          <img
+            src={resolveMediaUrl(previewImage)}
+            alt="Full-size attachment"
+            className="max-h-full max-w-full object-contain"
+            onClick={(event) => event.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
