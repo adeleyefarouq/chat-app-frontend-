@@ -196,6 +196,11 @@ function AppContent() {
       updateChatPreview(message.roomId, message.content || message.text || "");
     });
 
+    socket.on("message-deleted", ({ roomId, messageId }) => {
+      if (!roomId || !messageId) return;
+      setMessages((previous) => previous.filter((message) => message.id !== messageId));
+    });
+
     socket.connect();
 
     return () => {
@@ -203,6 +208,7 @@ function AppContent() {
       socket.off("disconnect");
       socket.off("connect_error");
       socket.off("chat-message");
+      socket.off("message-deleted");
       socket.disconnect();
       socketRef.current = null;
       previousRoomRef.current = null;
@@ -442,6 +448,30 @@ function AppContent() {
     }
   };
 
+  const handleDeleteMessage = async (messageId) => {
+    if (!activeChat || !messageId) return;
+
+    let deletedMessage;
+    let deletedIndex = -1;
+    setMessages((previous) => {
+      deletedIndex = previous.findIndex((message) => message.id === messageId);
+      deletedMessage = previous[deletedIndex];
+      return previous.filter((message) => message.id !== messageId);
+    });
+
+    try {
+      await api.chats.deleteMessage(activeChat, messageId);
+    } catch (error) {
+      if (deletedMessage) {
+        setMessages((previous) => {
+          const restored = [...previous];
+          restored.splice(Math.min(deletedIndex, restored.length), 0, deletedMessage);
+          return restored;
+        });
+      }
+    }
+  };
+
   const handleUnstarMessage = async (chatId, messageId) => {
     try {
       await api.chats.unstarMessage(chatId, messageId);
@@ -553,8 +583,10 @@ function AppContent() {
           activeNav={activeNav}
           messages={messages}
           onSendMessage={handleSendMessage}
+          onDeleteMessage={handleDeleteMessage}
           onFindUser={startConversationByUsername}
           onOpenMyProfile={openMyProfile}
+          onUpdateProfile={updateUser}
           searchResults={searchResults}
           searchLoading={searchLoading}
         />
@@ -603,6 +635,7 @@ function AppContent() {
         activeNavLabel={activeNavLabel}
         starredMessages={starredMessages}
         onStarMessage={handleStarMessage}
+        onDeleteMessage={handleDeleteMessage}
         onUnstarMessage={handleUnstarMessage}
         onJumpToChat={handleJumpToChat}
         onToggleNotifications={handleToggleNotifications}

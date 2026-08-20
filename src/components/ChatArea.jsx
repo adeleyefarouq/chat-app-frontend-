@@ -138,7 +138,7 @@ function MeetingInviteCard({ data }) {
 }
 
 /* ── Message Bubble ── */
-function MessageBubble({ msg, showSenderName = false, onStarMessage, onOpenImage }) {
+function MessageBubble({ msg, showSenderName = false, onStarMessage, onDeleteMessage, onOpenImage }) {
   const isSent = msg.type === "sent";
   const isStarred = msg.isStarred || false;
 
@@ -209,7 +209,7 @@ function MessageBubble({ msg, showSenderName = false, onStarMessage, onOpenImage
             </div>
           ) : null}
 
-          {(msg.contentType === "text" || msg.contentType === "text-image") && (
+          {(msg.contentType === "text" || msg.contentType === "text-image" || msg.contentType === "image") && (
             <div
               className={`message-actions absolute top-1/2 -translate-y-1/2 flex gap-1 ${
                 isSent ? "right-full mr-2" : "left-full ml-2"
@@ -229,6 +229,17 @@ function MessageBubble({ msg, showSenderName = false, onStarMessage, onOpenImage
                   title={isStarred ? "Unstar message" : "Star message"}
                 >
                   {isStarred ? <StarFilledIcon /> : <StarIcon />}
+                </button>
+              )}
+              {isSent && onDeleteMessage && (
+                <button
+                  type="button"
+                  onClick={() => onDeleteMessage(msg.id)}
+                  className="flex h-6 w-6 items-center justify-center rounded-full border border-red-200 bg-white text-sm font-bold text-red-500 shadow-sm transition-colors hover:bg-red-50"
+                  title="Delete message"
+                  aria-label="Delete message"
+                >
+                  &times;
                 </button>
               )}
             </div>
@@ -323,6 +334,7 @@ export default function ChatArea({
   isTyping = false,
   starredMessages = [],
   onStarMessage,
+  onDeleteMessage,
   onUnstarMessage,
   onJumpToChat,
   onToggleNotifications,
@@ -560,6 +572,7 @@ export default function ChatArea({
                 msg={msg} 
                 showSenderName={Boolean(activeChat?.isGroup)}
                 onStarMessage={onStarMessage}
+                onDeleteMessage={onDeleteMessage}
                 onOpenImage={setPreviewImage}
               />
             ))}

@@ -86,7 +86,7 @@ const AWLogo = () => (
 
 const EMOJIS = ["😀","😂","😍","🥰","😎","🤩","😊","🥳","👍","👏","🙌","🤝","❤️","🔥","⭐","✨","🎉","🎊","🎈","🎁","💯","🚀","💪","🙏","😅","🤔","😮","😱","🤣","😭","🥺","😤"];
 
-function MobileMessageBubble({ msg, currentUser, onOpenImage }) {
+function MobileMessageBubble({ msg, currentUser, onOpenImage, onDeleteMessage }) {
   const isSent = msg.type === "sent";
   const senderAvatar = msg.senderAvatar || buildAvatar(msg.sender || "User");
 
@@ -118,7 +118,21 @@ function MobileMessageBubble({ msg, currentUser, onOpenImage }) {
             />
           ) : null}
         </div>
-        {isSent && <span className="text-[9px] text-gray-400 mt-0.5 px-1">{msg.time}</span>}
+        {isSent && (
+          <div className="mt-0.5 flex items-center gap-2 px-1">
+            <span className="text-[9px] text-gray-400">{msg.time}</span>
+            {onDeleteMessage && (
+              <button
+                type="button"
+                onClick={() => onDeleteMessage(msg.id)}
+                className="text-[10px] font-semibold text-red-500"
+                aria-label="Delete message"
+              >
+                Delete
+              </button>
+            )}
+          </div>
+        )}
       </div>
       {isSent && (
         <img src={resolveMediaUrl(currentUser?.avatar || buildAvatar(currentUser?.name || currentUser?.username || "Me"))} alt="Me" className="w-7 h-7 rounded-full object-cover shrink-0" />
@@ -145,7 +159,7 @@ function MobileEmojiPicker({ onSelect }) {
   );
 }
 
-function MobileChatView({ onBack, activeChat, messages, onSendMessage, currentUser }) {
+function MobileChatView({ onBack, activeChat, messages, onSendMessage, onDeleteMessage, currentUser }) {
   const [inputText, setInputText] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
@@ -217,7 +231,7 @@ function MobileChatView({ onBack, activeChat, messages, onSendMessage, currentUs
       </div>
 
       <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
-        {(messages || []).map((msg) => <MobileMessageBubble key={msg.id} msg={msg} currentUser={currentUser} onOpenImage={setPreviewImage} />)}
+        {(messages || []).map((msg) => <MobileMessageBubble key={msg.id} msg={msg} currentUser={currentUser} onOpenImage={setPreviewImage} onDeleteMessage={onDeleteMessage} />)}
         <div ref={messagesEndRef} />
       </div>
 
@@ -390,7 +404,7 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab, searc
   );
 }
 
-export default function MobileLayout({ currentUser, chats, activeChat, setActiveChat, activeNav, messages, onSendMessage, onFindUser, onOpenMyProfile, searchResults = [], searchLoading = false }) {
+export default function MobileLayout({ currentUser, chats, activeChat, setActiveChat, activeNav, messages, onSendMessage, onDeleteMessage, onFindUser, onOpenMyProfile, onUpdateProfile, searchResults = [], searchLoading = false }) {
   const [view, setView] = useState("list");
   const [activeTab, setActiveTab] = useState(activeNav === "groups" ? "groups" : "chat");
 
@@ -435,9 +449,7 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
               profile={currentUser}
               profileMode="me"
               onUpdateProfile={(updatedUser) => {
-                if (updatedUser) {
-                  onOpenMyProfile?.(updatedUser);
-                }
+                if (updatedUser) onUpdateProfile?.(updatedUser);
               }}
             />
           </div>
@@ -463,6 +475,7 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
             activeChat={activeChatData}
             messages={messages}
             onSendMessage={onSendMessage}
+            onDeleteMessage={onDeleteMessage}
             currentUser={currentUser}
           />
         )}

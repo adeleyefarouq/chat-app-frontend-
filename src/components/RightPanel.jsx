@@ -164,6 +164,23 @@ export default function RightPanel({ onClose, profile, profileMode = "partner", 
     }
   };
 
+  const handleRemovePhoto = async () => {
+    setSaving(true);
+    setError("");
+
+    try {
+      const response = await api.users.updateProfile({ avatar: null });
+      const updatedUser = response.user || response;
+      onUpdateProfile?.(updatedUser);
+      setAvatarPreview(updatedUser.avatar || buildAvatar(profileName));
+      setAvatarFile(null);
+    } catch (caughtError) {
+      setError(caughtError.message || "Unable to remove avatar.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="flex flex-col w-[280px] xl:w-[300px] bg-white border-l border-gray-100 h-full shrink-0" style={{ overflowY: "auto", scrollbarWidth: "thin", scrollbarColor: "#e2e8f0 transparent" }}>
       <div className="relative flex flex-col items-center pt-10 pb-7 px-4 shrink-0" style={{ background: "linear-gradient(150deg, #c4b5fd 0%, #a78bfa 35%, #8b5cf6 70%, #7c3aed 100%)" }}>
@@ -191,10 +208,20 @@ export default function RightPanel({ onClose, profile, profileMode = "partner", 
         <p className="text-white/75 text-xs mt-1 font-medium">{profileStatus}</p>
 
         {profileMode === "me" && (
-          <label className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/40 bg-white/20 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/30">
-            Change photo
-            <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-          </label>
+          <div className="mt-3 flex items-center gap-2">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/40 bg-white/20 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/30">
+              Change photo
+              <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+            </label>
+            <button
+              type="button"
+              onClick={handleRemovePhoto}
+              disabled={saving}
+              className="rounded-full border border-white/40 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/20 disabled:opacity-60"
+            >
+              Remove photo
+            </button>
+          </div>
         )}
       </div>
 

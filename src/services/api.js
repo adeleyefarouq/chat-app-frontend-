@@ -133,6 +133,9 @@ export const api = {
       method: "POST",
       body: JSON.stringify(payload),
     }),
+    deleteMessage: (chatId, messageId) => request(`/chats/${chatId}/messages/${messageId}`, {
+      method: "DELETE",
+    }),
     uploadImage: (chatId, file) => {
       const formData = new FormData();
       formData.append("image", file);
