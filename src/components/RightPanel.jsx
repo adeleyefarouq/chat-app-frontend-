@@ -27,6 +27,13 @@ const BellIcon = () => (
     <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
   </svg>
 );
+const LogoutIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+    <polyline points="16 17 21 12 16 7"/>
+    <line x1="21" y1="12" x2="9" y2="12"/>
+  </svg>
+);
 const ChevronRightIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="9 18 15 12 9 6"/>
@@ -60,7 +67,7 @@ function OptionRow({ icon, label, rightElement }) {
   );
 }
 
-export default function RightPanel({ onClose, profile, profileMode = "partner", onUpdateProfile, onToggleBlockUser }) {
+export default function RightPanel({ onClose, profile, profileMode = "partner", onUpdateProfile, onToggleBlockUser, onLogout }) {
   const [notifications, setNotifications] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -326,6 +333,18 @@ export default function RightPanel({ onClose, profile, profileMode = "partner", 
         <OptionRow icon={<StarIcon />} label="Starred Messages" rightElement={<ChevronRightIcon />} />
         <OptionRow icon={<FileIcon />} label="Shared Files" rightElement={<ChevronRightIcon />} />
         <OptionRow icon={<BellIcon />} label="Notifications" rightElement={<ToggleSwitch checked={notifications} onChange={() => setNotifications((value) => !value)} />} />
+        {profileMode === "me" && (
+          <button
+            type="button"
+            onClick={onLogout}
+            className="flex items-center gap-3 py-2.5 px-2 rounded-xl hover:bg-red-50 transition-colors text-left w-full group"
+          >
+            <span className="w-8 h-8 rounded-xl bg-red-50 flex items-center justify-center text-red-500 transition-colors shrink-0 group-hover:scale-105" style={{ transition: "all 0.15s" }}>
+              <LogoutIcon />
+            </span>
+            <span className="flex-1 text-sm font-medium text-red-600">Logout</span>
+          </button>
+        )}
       </div>
     </div>
   );

@@ -88,7 +88,7 @@ function normalizeMessages(items = [], currentUser) {
 
 function AppContent() {
   const isMobile = useIsMobile();
-  const { user, loading, updateUser } = useAuth();
+  const { user, loading, updateUser, logout } = useAuth();
   const [activeNav, setActiveNav] = useState("chat");
   const [activeChat, setActiveChat] = useState(null);
   const [showRightPanel, setShowRightPanel] = useState(false);
@@ -101,6 +101,21 @@ function AppContent() {
   const [starredMessages, setStarredMessages] = useState([]);
   const socketRef = useRef(null);
   const previousRoomRef = useRef(null);
+
+  const handleLogout = () => {
+    socketRef.current?.disconnect();
+    socketRef.current = null;
+    previousRoomRef.current = null;
+    setConversations([]);
+    setMessages([]);
+    setSearchQuery("");
+    setSearchResults([]);
+    setStarredMessages([]);
+    setActiveChat(null);
+    setShowRightPanel(false);
+    setIsMyProfileOpen(false);
+    logout();
+  };
 
   const navLabels = {
     chat: "Chats",
@@ -594,6 +609,7 @@ function AppContent() {
           onFindUser={startConversationByUsername}
           onOpenMyProfile={openMyProfile}
           onUpdateProfile={updateUser}
+          onLogout={handleLogout}
           searchResults={searchResults}
           searchLoading={searchLoading}
         />
@@ -656,6 +672,7 @@ function AppContent() {
           profileMode={isMyProfileOpen ? "me" : "partner"}
           onUpdateProfile={(updatedUser) => updateUser(updatedUser)}
           onToggleBlockUser={handleToggleBlockUser}
+          onLogout={handleLogout}
         />
       )}
     </div>

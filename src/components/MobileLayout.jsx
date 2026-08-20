@@ -407,7 +407,7 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab, searc
   );
 }
 
-export default function MobileLayout({ currentUser, chats, activeChat, setActiveChat, activeNav, messages, onSendMessage, onDeleteMessage, onFindUser, onOpenMyProfile, onUpdateProfile, searchResults = [], searchLoading = false }) {
+export default function MobileLayout({ currentUser, chats, activeChat, setActiveChat, activeNav, messages, onSendMessage, onDeleteMessage, onFindUser, onOpenMyProfile, onUpdateProfile, onLogout, searchResults = [], searchLoading = false }) {
   const [view, setView] = useState("list");
   const [activeTab, setActiveTab] = useState(activeNav === "groups" ? "groups" : "chat");
 
@@ -454,6 +454,7 @@ export default function MobileLayout({ currentUser, chats, activeChat, setActive
               onUpdateProfile={(updatedUser) => {
                 if (updatedUser) onUpdateProfile?.(updatedUser);
               }}
+              onLogout={onLogout}
             />
           </div>
         ) : view === "list" ? (
