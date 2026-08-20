@@ -29,6 +29,12 @@ const FilterIcon = () => (
   </svg>
 );
 
+function getChatPreview(chat) {
+  return chat.lastMessageContentType === "image" || chat.lastMessageType === "image"
+    ? "📷 Photo"
+    : chat.lastMessage;
+}
+
 function ChatItem({ chat, isActive, onClick }) {
   const avatar = chat.isGroup ? DEFAULT_GROUP_AVATAR : (chat.avatar || buildAvatar(chat.name));
 
@@ -50,7 +56,7 @@ function ChatItem({ chat, isActive, onClick }) {
           <span className="text-[10px] text-gray-400 shrink-0">{chat.time}</span>
         </div>
         <div className="flex items-center justify-between gap-1">
-          <span className="text-xs text-gray-500 truncate">{chat.lastMessage}</span>
+          <span className="text-xs text-gray-500 truncate">{getChatPreview(chat)}</span>
           {chat.unread > 0 && (
             <span className="shrink-0 min-w-5 h-5 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center px-1">
               {chat.unread}

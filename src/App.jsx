@@ -43,13 +43,17 @@ function normalizeChat(item) {
   const name = item.name || item.groupName || participantNames.join(", ") || participant.name || participant.username || item.username || "Unknown User";
   const username = item.username || participant.username || participantNames[0] || "";
   const avatar = isGroup ? DEFAULT_GROUP_AVATAR : (item.avatar || participant.avatar || buildAvatar(name));
+  const lastMessageContentType = item.lastMessageContentType || item.lastMessageType || "text";
 
   return {
     id: item.id || item._id || participant.id || username,
     name,
     username,
     avatar,
-    lastMessage: item.lastMessage || item.preview || item.message || (isGroup ? "Group conversation" : "Start a conversation"),
+    lastMessage: lastMessageContentType === "image"
+      ? "📷 Photo"
+      : (item.lastMessage || item.preview || item.message || (isGroup ? "Group conversation" : "Start a conversation")),
+    lastMessageContentType,
     unread: item.unread || 0,
     isOnline: item.isOnline ?? participant.isOnline ?? true,
     isGroup,
@@ -120,8 +124,10 @@ function AppContent() {
     });
   };
 
-  const updateChatPreview = (chatId, lastMessage) => {
-    setConversations((previous) => previous.map((chat) => (chat.id === chatId ? { ...chat, lastMessage } : chat)));
+  const updateChatPreview = (chatId, lastMessage, contentType = "text") => {
+    setConversations((previous) => previous.map((chat) => (chat.id === chatId
+      ? { ...chat, lastMessage: contentType === "image" ? "📷 Photo" : lastMessage, lastMessageContentType: contentType }
+      : chat)));
   };
 
   useEffect(() => {
@@ -193,12 +199,13 @@ function AppContent() {
       console.log('event fired: chat-message', message);
       if (!message?.roomId) return;
       appendMessage(message);
-      updateChatPreview(message.roomId, message.content || message.text || "");
+      updateChatPreview(message.roomId, message.content || message.text || "", message.contentType);
     });
 
-    socket.on("message-deleted", ({ roomId, messageId }) => {
+    socket.on("message-deleted", ({ roomId, messageId, lastMessage, lastMessageType }) => {
       if (!roomId || !messageId) return;
       setMessages((previous) => previous.filter((message) => message.id !== messageId));
+      updateChatPreview(roomId, lastMessage || "Start a conversation", lastMessageType || "text");
     });
 
     socket.connect();
@@ -413,7 +420,7 @@ function AppContent() {
       const normalized = normalizeMessages([payload], user);
       if (normalized[0]) {
         setMessages((prev) => (prev.some((msg) => msg.id === normalized[0].id) ? prev : [...prev, normalized[0]]));
-        updateChatPreview(activeChat, normalized[0].content);
+        updateChatPreview(activeChat, normalized[0].content, normalized[0].contentType);
       }
     } catch (error) {
       setMessages((prev) => [

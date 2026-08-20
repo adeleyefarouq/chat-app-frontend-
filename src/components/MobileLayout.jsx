@@ -324,6 +324,9 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab, searc
   // When user has typed in search and we have search results, display those
   const displayList = search.trim() ? searchResults : filteredChats;
   const noResultsMessage = search.trim() ? "No users found" : "No chats found";
+  const getChatPreview = (chat) => chat.lastMessageContentType === "image" || chat.lastMessageType === "image"
+    ? "📷 Photo"
+    : chat.lastMessage;
 
   return (
     <div className="flex h-full w-full min-w-0 flex-col overflow-hidden bg-white">
@@ -392,7 +395,7 @@ function MobileChatList({ chats = [], onSelectChat, onFindUser, activeTab, searc
                 <span className="truncate text-sm font-semibold text-gray-800">{item.name || item.username}</span>
                 {item.time && <span className="shrink-0 text-[11px] text-gray-400">{item.time}</span>}
               </div>
-              {item.lastMessage && <p className="mt-0.5 truncate text-xs text-gray-500">{item.lastMessage}</p>}
+              {item.lastMessage && <p className="mt-0.5 truncate text-xs text-gray-500">{getChatPreview(item)}</p>}
             </div>
           </div>
         ))}

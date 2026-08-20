@@ -143,7 +143,7 @@ function MessageBubble({ msg, showSenderName = false, onStarMessage, onDeleteMes
   const isStarred = msg.isStarred || false;
 
   return (
-    <div className={`flex items-end gap-2.5 mb-4 ${isSent ? "flex-row-reverse" : "flex-row"}`}>
+    <div className={`message-bubble flex items-end gap-2.5 mb-4 ${isSent ? "flex-row-reverse" : "flex-row"}`}>
       {!isSent ? (
         <img
           src={resolveMediaUrl(msg.senderAvatar || buildAvatar(msg.sender))}
