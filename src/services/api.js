@@ -47,7 +47,9 @@ async function request(path, options = {}) {
 
   if (!response.ok) {
     const message = typeof payload === "string" ? payload : payload?.message || payload?.error || "Request failed";
-    throw new Error(message);
+    const error = new Error(message);
+    error.status = response.status;
+    throw error;
   }
 
   return payload;

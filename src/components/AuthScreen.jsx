@@ -74,6 +74,14 @@ export default function AuthScreen() {
   const getFriendlyAuthError = (caughtError) => {
     const message = String(caughtError?.message || "").toLowerCase();
 
+    if (mode === "login" && caughtError?.status === 401) {
+      return "Incorrect username or password";
+    }
+
+    if (mode === "login" && (caughtError instanceof TypeError || message === "failed to fetch")) {
+      return "Connection error, please try again";
+    }
+
     if (!message) {
       return mode === "login" ? "Invalid login credentials" : "Unable to create account. Please check your details.";
     }
